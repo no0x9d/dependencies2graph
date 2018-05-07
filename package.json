@@ -1,0 +1,18 @@
+{
+  "name": "dependency-graph",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "bin": "bin/cli.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "lodash.groupby": "^4.6.0",
+    "viz.js": "^1.8.2",
+    "yargs": "^11.0.0"
+  }
+}
