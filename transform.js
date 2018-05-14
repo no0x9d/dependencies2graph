@@ -7,7 +7,7 @@ module.exports = function transform(data, options) {
   const pathMatcher = new RegExp(path);
   const dependencyPredicate = externalDependencies ? () => true : dep => pathMatcher.test(dep.resolved);
   let externalModules = [];
-  let rootModules = data.dependencies
+  let rootModules = (data.dependencies /*dependency-cruiser <= v3.x.x*/|| data.modules /* dependency-cruisier >= v4.0.0*/)
     .filter(module => pathMatcher.test(module.source))
     .map(module => {
       const dependencies = module.dependencies
