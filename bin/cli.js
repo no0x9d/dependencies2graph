@@ -26,7 +26,7 @@ const argv = require('yargs')
   .option('D', {
     alias: 'external-depth',
     description: 'number of child folders for external dependencies',
-    default: 3,
+    default: 1,
     type: 'number',
     requiresArg: true
   })
