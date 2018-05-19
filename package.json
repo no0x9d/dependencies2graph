@@ -9,7 +9,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "lodash.groupby": "^4.6.0",
     "viz.js": "^1.8.2",
