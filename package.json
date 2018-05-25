@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "main.js",
-  "bin": "bin/cli.js",
+  "bin": "dist/bin/cli.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -12,6 +12,7 @@
   "license": "MIT",
   "dependencies": {
     "lodash.groupby": "^4.6.0",
+    "typescript": "^2.8.3",
     "viz.js": "^1.8.2",
     "yargs": "^11.0.0"
   }

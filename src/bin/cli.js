@@ -72,4 +72,4 @@ const outputTo = argv.out;
 const engine = argv.engine;
 const format = argv.target;
 
-require('../main')({filename, path, depth, externalDependencies, externalDepth, outputTo, engine, format});
+require('../../dist/main')({filename, path, depth, externalDependencies, externalDepth, outputTo, engine, format});
