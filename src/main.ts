@@ -1,17 +1,17 @@
-const fs = require('fs');
-const Viz = require('viz.js');
+import * as fs from 'fs';
+import * as Viz from 'viz.js';
 
-const transform = require('./transform');
-const dotRender = require('./render');
-const write = require('./write');
+import {transform} from './transform';
+import {render} from './render';
+import {write} from './write';
 
-module.exports = function run({path, depth, externalDependencies, externalDepth, outputTo, format, engine, filename}) {
+export function run({path, depth, externalDependencies, externalDepth, outputTo, format, engine, filename}) {
   // READ
   const data = JSON.parse(fs.readFileSync(filename, 'utf8'));
   // TRANSFORM
   const dependencies = transform(data, {path, depth, externalDependencies, externalDepth});
   // WRITE
-  const dotGraph = dotRender(dependencies);
+  const dotGraph = render(dependencies);
   if (format === 'dot') {
     write(outputTo, dotGraph);
   } else if (format === 'raw') {

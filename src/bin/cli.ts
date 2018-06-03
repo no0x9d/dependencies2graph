@@ -1,7 +1,8 @@
 #!/usr/bin/env node
-'use strict';
+import * as yargs from 'yargs';
+import {run} from '../main';
 
-const argv = require('yargs')
+const argv = yargs
   .option('i', {
     alias: 'input',
     description: 'dependency-cruiser JSON file',
@@ -72,4 +73,4 @@ const outputTo = argv.out;
 const engine = argv.engine;
 const format = argv.target;
 
-require('../../dist/main')({filename, path, depth, externalDependencies, externalDepth, outputTo, engine, format});
+run({filename, path, depth, externalDependencies, externalDepth, outputTo, engine, format});

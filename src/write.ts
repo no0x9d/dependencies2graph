@@ -1,6 +1,6 @@
-const fs = require('fs');
+import * as fs from 'fs';
 
-module.exports = function write(pOutputTo, pContent) {
+export function write(pOutputTo, pContent) {
   if ("-" === pOutputTo) {
     writeToStdOut(pContent, 512);
   } else {

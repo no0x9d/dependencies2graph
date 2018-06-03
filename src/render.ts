@@ -1,4 +1,4 @@
-module.exports = function render(data) {
+export function render(data) {
   return renderGraph(
     renderNodes(data) + '\n' + renderEdges(data)
   );
@@ -49,7 +49,8 @@ function renderAttributes(attributes) {
   if (!attributes || !Object.keys(attributes).length) {
     return '';
   }
-  return Object.entries(attributes)
+  return Object.keys(attributes)
+    .map(key => [key, attributes[key]])
     .map(([key, value]) => renderAttribute(key, value))
     .join(' ')
 }
@@ -63,7 +64,7 @@ function renderEdge(from, to, attributes) {
 }
 
 function nodeStyles(module) {
-  const attributes = {label: `"${module.path.pop()}"`};
+  const attributes: NodeStyles = {label: `"${module.path.pop()}"`};
 
   if(module.isModule) {
     attributes.fillcolor = '"#ffffff"';
@@ -93,4 +94,11 @@ function renderGraph(graph) {
     
     ${graph}
     }`;
+}
+
+interface NodeStyles {
+  label?: string;
+  fillcolor?: string;
+  height?: string
+  shape?: 'tab'
 }

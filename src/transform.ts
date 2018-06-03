@@ -1,13 +1,23 @@
-const groupBy = require('lodash.groupby');
+import * as groupBy from 'lodash.groupby';
+import {DependencyCruiserOutputFormatV3, DependencyCruiserOutputFormatV4} from './typings/dependency-cruiser';
 
 const pathSep = '/';
 
-module.exports = function transform(data, options) {
+interface Dependency {
+  source: string;
+  path: string[];
+  external: boolean;
+  dependencies: any[];
+}
+
+export function transform(data: DependencyCruiserOutputFormatV3 | DependencyCruiserOutputFormatV4, options) {
   const {depth, path, externalDependencies, externalDepth} = options;
   const pathMatcher = new RegExp(path);
   const dependencyPredicate = externalDependencies ? () => true : dep => pathMatcher.test(dep.resolved);
-  let externalModules = [];
-  let rootModules = (data.dependencies /*dependency-cruiser <= v3.x.x*/|| data.modules /* dependency-cruisier >= v4.0.0*/)
+  let externalModules: Dependency[] = [];
+  let cruisedModules = ((<DependencyCruiserOutputFormatV3>data).dependencies ||
+    (<DependencyCruiserOutputFormatV4>data).modules );
+  let rootModules = cruisedModules
     .filter(module => pathMatcher.test(module.source))
     .map(module => {
       const dependencies = module.dependencies
@@ -44,11 +54,12 @@ module.exports = function transform(data, options) {
         return module;
       }).reduce(groupBySource, new Map());
 
-    deps = [];
-    for ([source, module] of rootModulesMap) {
-      const groupedBySourceDependencies = groupBy(module.dependencies, (dep) => dep.source);
+    const deps: any[] = [];
+    for (const [source, module] of rootModulesMap) {
+      const groupedBySourceDependencies: {[key: string]: any[]} = groupBy(module.dependencies, (dep) => dep.source);
       module.dependencies = Object.values(groupedBySourceDependencies)
-        .map(depArray => depArray.reduce((acc, curr) => Object.assign({}, acc, curr, preserveState(acc, curr)), {valid: true}));
+        .map(depArray => depArray.reduce((acc, curr) => Object.assign({}, acc, curr, preserveState(acc, curr)),
+          {valid: true}));
       deps.push(module);
     }
     rootModules = deps;
@@ -87,6 +98,7 @@ function truncatePath(module, depth, externalDepth) {
       path: sp,
       isModule: true
     }
-  } else
+  } else {
     return {};
+  }
 }
