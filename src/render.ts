@@ -1,23 +1,28 @@
-export function render(data) {
+import {Module, ModuleDependency} from './transform';
+
+export function render(data: Module[]) {
   return renderGraph(
     renderNodes(data) + '\n' + renderEdges(data)
   );
-};
+}
 
-function renderNodes(data) {
+function renderNodes(data: Module[]) {
   return data
-    .map((module) => {
+    .map((module: Module) => {
         return module.path.slice(0, -1)
-          .map((pathSegment, idx, arr) => ({source: arr.slice(0, idx + 1).join('/'), label: pathSegment}))
+          .map((pathSegment: string, idx: number, arr: string[]) => ({
+            source: arr.slice(0, idx + 1).join('/'),
+            label: pathSegment
+          }))
           .reduceRight((nestedGraph, node) => renderSubgraph(node.source, nestedGraph, {label: `"${node.label}"`}),
             renderNode(module.source, nodeStyles(module)))
       }
     ).join('\n')
 }
 
-function renderEdges(data) {
+function renderEdges(data: Module[]) {
   return data
-    .map((module) => {
+    .map((module: Module) => {
         return module.dependencies
           .filter(dependency => dependency.source !== module.source || dependency.circular || !dependency.valid)
           .map(d => renderEdge(module.source, d.source, {color: determineEdgeColor(d)}))
@@ -26,26 +31,26 @@ function renderEdges(data) {
     ).join('\n')
 }
 
-function determineEdgeColor(dependency) {
+function determineEdgeColor(dependency: ModuleDependency) {
   if (dependency.circular) {
     return 'orange';
-  } else if(!dependency.valid) {
+  } else if (!dependency.valid) {
     return 'red';
-  } else if(dependency.external) {
+  } else if (dependency.external) {
     return 'lightskyblue'
   }
   return 'black';
 }
 
-function renderSubgraph(id, content, attributes) {
+function renderSubgraph(id, content, attributes: Attributes) {
   return `subgraph "cluster_${id}" { ${renderAttributes(attributes)} ${content} }`
 }
 
-function renderNode(id, attributes) {
+function renderNode(id: string, attributes: Attributes) {
   return `"${id}" [${renderAttributes(attributes)}]`
 }
 
-function renderAttributes(attributes) {
+function renderAttributes(attributes: Attributes): string {
   if (!attributes || !Object.keys(attributes).length) {
     return '';
   }
@@ -55,31 +60,31 @@ function renderAttributes(attributes) {
     .join(' ')
 }
 
-function renderAttribute(key, value) {
+function renderAttribute(key: string, value: string): string {
   return `${key}=${value}`;
 }
 
-function renderEdge(from, to, attributes) {
+function renderEdge(from: string, to: string, attributes): string {
   return `  "${from}" -> "${to}" [${renderAttributes(attributes)}]`;
 }
 
-function nodeStyles(module) {
-  const attributes: NodeStyles = {label: `"${module.path.pop()}"`};
+function nodeStyles(module: Module): Attributes {
+  const attributes: Attributes = {label: `"${module.path.pop()}"`};
 
-  if(module.isModule) {
+  if (module.isModule) {
     attributes.fillcolor = '"#ffffff"';
     attributes.height = "0.4";
     attributes.shape = 'tab';
   }
 
-  if(module.external) {
+  if (module.external) {
     attributes.fillcolor = 'lightskyblue'
   }
 
   return attributes
 }
 
-function renderGraph(graph) {
+function renderGraph(graph: string) {
   return `digraph G {
     rankdir=TB
     splines=true
@@ -96,9 +101,6 @@ function renderGraph(graph) {
     }`;
 }
 
-interface NodeStyles {
-  label?: string;
-  fillcolor?: string;
-  height?: string
-  shape?: 'tab'
+interface Attributes {
+  [key: string]: string;
 }

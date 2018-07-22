@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+//@ts-ignore TS2306
 import * as Viz from 'viz.js';
 
 import {transform} from './transform';

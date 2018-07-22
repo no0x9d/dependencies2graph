@@ -1,33 +1,46 @@
 import * as groupBy from 'lodash.groupby';
-import {DependencyCruiserOutputFormatV3, DependencyCruiserOutputFormatV4} from './typings/dependency-cruiser';
+import {
+  CruisedModules, Dependency,
+  DependencyCruiserOutputFormatV3,
+  DependencyCruiserOutputFormatV4
+} from './typings/dependency-cruiser';
 
 const pathSep = '/';
 
-interface Dependency {
+export interface Module {
   source: string;
   path: string[];
   external: boolean;
-  dependencies: any[];
+  dependencies: ModuleDependency[];
+  isModule?: boolean;
 }
 
-export function transform(data: DependencyCruiserOutputFormatV3 | DependencyCruiserOutputFormatV4, options) {
+export interface ModuleDependency {
+  source: string;
+  path: string[];
+  external: boolean;
+  circular?: boolean;
+  valid: boolean;
+}
+
+export function transform(data: DependencyCruiserOutputFormatV3 | DependencyCruiserOutputFormatV4, options): Module[] {
   const {depth, path, externalDependencies, externalDepth} = options;
   const pathMatcher = new RegExp(path);
-  const dependencyPredicate = externalDependencies ? () => true : dep => pathMatcher.test(dep.resolved);
-  let externalModules: Dependency[] = [];
-  let cruisedModules = ((<DependencyCruiserOutputFormatV3>data).dependencies ||
-    (<DependencyCruiserOutputFormatV4>data).modules );
-  let rootModules = cruisedModules
-    .filter(module => pathMatcher.test(module.source))
-    .map(module => {
-      const dependencies = module.dependencies
+  const dependencyPredicate = externalDependencies ? () => true : (dep: Dependency) => pathMatcher.test(dep.resolved);
+  let externalModules: Module[] = [];
+  let cruisedModules: CruisedModules[] = ((<DependencyCruiserOutputFormatV3>data).dependencies ||
+    (<DependencyCruiserOutputFormatV4>data).modules);
+  let rootModules: Module[] = cruisedModules
+    .filter((module: CruisedModules) => pathMatcher.test(module.source))
+    .map((module: CruisedModules) => {
+      const dependencies: ModuleDependency[] = module.dependencies
         .filter(dependencyPredicate)
-        .map(dep => ({
+        .map((dep: Dependency) => ({
           source: dep.resolved,
           path: dep.resolved.split(pathSep),
           external: !pathMatcher.test(dep.resolved),
           valid: dep.valid,
-          circular: dep.circular
+          circular: dep.circular,
         }));
 
       dependencies
@@ -37,6 +50,7 @@ export function transform(data: DependencyCruiserOutputFormatV3 | DependencyCrui
       return {
         source: module.source,
         path: module.source.split(pathSep),
+        external: false,
         dependencies
       }
     });
@@ -44,22 +58,22 @@ export function transform(data: DependencyCruiserOutputFormatV3 | DependencyCrui
   rootModules.push(...externalModules);
 
   if (depth > 0) {
-    const rootModulesMap = rootModules
-      .map(module => {
+    const rootModulesMap: Map<string, Module> = rootModules
+      .map((module: Module) => {
         module = Object.assign({}, module, truncatePath(module, depth, externalDepth));
 
         module.dependencies =
           module.dependencies.map(dep => Object.assign({}, dep, truncatePath(dep, depth, externalDepth)));
 
         return module;
-      }).reduce(groupBySource, new Map());
+      }).reduce(groupBySource, new Map<string, Module>());
 
-    const deps: any[] = [];
-    for (const [source, module] of rootModulesMap) {
-      const groupedBySourceDependencies: {[key: string]: any[]} = groupBy(module.dependencies, (dep) => dep.source);
+    const deps: Module[] = [];
+    for (const [_source, module] of rootModulesMap) {
+      const groupedBySourceDependencies: { [key: string]: any[] } = groupBy(module.dependencies, (dep) => dep.source);
       module.dependencies = Object.values(groupedBySourceDependencies)
-        .map(depArray => depArray.reduce((acc, curr) => Object.assign({}, acc, curr, preserveState(acc, curr)),
-          {valid: true}));
+        .map((depArray: ModuleDependency[]) => depArray.reduce((acc, curr) => Object.assign({}, acc, curr, preserveState(acc, curr)),
+          {valid: true} as ModuleDependency));
       deps.push(module);
     }
     rootModules = deps;
@@ -78,18 +92,20 @@ function groupBySource(map, module) {
   return map;
 }
 
-function shouldTruncate(module, depth) {
+function shouldTruncate(module: {path: string[]}, depth: number): boolean {
   return module.path.length > depth;
 }
 
-function preserveState(dep1, dep2) {
+function preserveState(dep1: ModuleDependency, dep2: ModuleDependency):
+  { circular: boolean | undefined, valid: boolean } {
   return {
     circular: dep1.circular || dep2.circular,
     valid: dep1.valid && dep2.valid
   }
 }
 
-function truncatePath(module, depth, externalDepth) {
+function truncatePath(module: {path: string[], external: boolean}, depth: number, externalDepth: number):
+  { source?: string, path?: string[], isModule?: boolean } {
   depth = module.external ? externalDepth : depth;
   if (shouldTruncate(module, depth)) {
     const sp = module.path.slice(0, depth);
