@@ -1,6 +1,6 @@
 import * as fs from 'fs';
-//@ts-ignore TS2306
 import * as Viz from 'viz.js';
+import {Module, render as VizRender} from 'viz.js/full.render'
 
 import {transform} from './transform';
 import {render} from './render';
@@ -18,6 +18,10 @@ export function run({path, depth, externalDependencies, externalDepth, outputTo,
   } else if (format === 'raw') {
     write(outputTo, JSON.stringify(dependencies, null, 2));
   } else {
-    write(outputTo, Viz(dotGraph, {engine, format}));
+    const viz = new Viz({Module, render: VizRender});
+    viz.renderString(dotGraph, {engine, format, totalMemory: 256})
+      .then(output => {
+        write(outputTo, output);
+      });
   }
 };
