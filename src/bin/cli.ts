@@ -35,7 +35,7 @@ const argv = yargs
     alias: 'external-dependencies',
     description: 'flag to show dependencies which point outside of <filter>',
     default: false,
-    type: 'boolen',
+    type: 'boolean',
   })
   .option('o', {
     alias: 'out',

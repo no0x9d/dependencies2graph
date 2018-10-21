@@ -1,23 +1,22 @@
 import * as fs from 'fs';
 
-export function write(pOutputTo, pContent) {
+export function write(pOutputTo: string, pContent: string): void {
   if ("-" === pOutputTo) {
     writeToStdOut(pContent, 512);
   } else {
     writeToFile(pOutputTo, pContent);
   }
-};
+}
 
-function writeToStdOut(pString, pBufferSize = 512) {
+function writeToStdOut(pString: string, pBufferSize = 512): void {
   const lNumberOfChunks = Math.ceil(pString.length / pBufferSize);
 
   for (let i = 0; i < lNumberOfChunks; i++) {
     process.stdout.write(pString.substr(i * pBufferSize, pBufferSize));
   }
-
 }
 
-function writeToFile(pOutputTo, pDependencyString) {
+function writeToFile(pOutputTo: string, pDependencyString: string): void {
   try {
     fs.writeFileSync(
       pOutputTo,

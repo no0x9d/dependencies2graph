@@ -1,4 +1,5 @@
-import * as groupBy from 'lodash.groupby';
+import groupBy = require("lodash.groupby");
+
 import {
   CruisedModules, Dependency,
   DependencyCruiserOutputFormatV3,
@@ -23,7 +24,14 @@ export interface ModuleDependency {
   valid: boolean;
 }
 
-export function transform(data: DependencyCruiserOutputFormatV3 | DependencyCruiserOutputFormatV4, options): Module[] {
+interface Options {
+  depth: number,
+  path: string,
+  externalDependencies: boolean,
+  externalDepth: number
+}
+
+export function transform(data: DependencyCruiserOutputFormatV3 | DependencyCruiserOutputFormatV4, options: Options): Module[] {
   const {depth, path, externalDependencies, externalDepth} = options;
   const pathMatcher = new RegExp(path);
   const dependencyPredicate = externalDependencies ? () => true : (dep: Dependency) => pathMatcher.test(dep.resolved);
@@ -70,7 +78,7 @@ export function transform(data: DependencyCruiserOutputFormatV3 | DependencyCrui
 
     const deps: Module[] = [];
     for (const [_source, module] of rootModulesMap) {
-      const groupedBySourceDependencies: { [key: string]: any[] } = groupBy(module.dependencies, (dep) => dep.source);
+      const groupedBySourceDependencies: { [key: string]: any[] } = groupBy(module.dependencies, (dep: ModuleDependency ) => dep.source);
       module.dependencies = Object.values(groupedBySourceDependencies)
         .map((depArray: ModuleDependency[]) => depArray.reduce((acc, curr) => Object.assign({}, acc, curr, preserveState(acc, curr)),
           {valid: true} as ModuleDependency));
@@ -79,11 +87,11 @@ export function transform(data: DependencyCruiserOutputFormatV3 | DependencyCrui
     rootModules = deps;
   }
   return rootModules;
-};
+}
 
-function groupBySource(map, module) {
+function groupBySource(map: Map<string, Module>, module: Module) {
   if (map.has(module.source)) {
-    map.get(module.source)
+    map.get(module.source)!
       .dependencies
       .push(...module.dependencies);
   } else {

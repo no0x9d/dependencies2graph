@@ -17,7 +17,9 @@
     "yargs": "^11.0.0"
   },
   "devDependencies": {
+    "@types/lodash.groupby": "^4.6.4",
     "@types/node": "^10.1.2",
+    "@types/yargs": "^12.0.1",
     "typescript": "^2.8.3"
   },
   "engines": {
