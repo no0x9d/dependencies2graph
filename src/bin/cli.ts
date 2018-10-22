@@ -37,6 +37,12 @@ const argv = yargs
     default: false,
     type: 'boolean',
   })
+  .option('C', {
+    alias: 'connected-components',
+    description: 'mark all connected components of the dependency tree as circular',
+    default: false,
+    type: 'boolean'
+  })
   .option('o', {
     alias: 'out',
     description: 'output file',
@@ -72,5 +78,6 @@ const externalDepth = argv.externalDepth;
 const outputTo = argv.out;
 const engine = argv.engine;
 const format = argv.target;
+const markConnectedComponents = argv.connectedComponents
 
-run({filename, path, depth, externalDependencies, externalDepth, outputTo, engine, format});
+run({filename, path, depth, externalDependencies, externalDepth, outputTo, engine, format, markConnectedComponents});

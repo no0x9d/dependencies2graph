@@ -14,14 +14,16 @@ export interface Options {
   outputTo: string;
   format: 'svg' | 'dot' | 'raw';
   engine: 'dot' | 'circo' | 'fdp' | 'neato' | 'osage' | 'twopi';
-  filename: string
+  filename: string,
+  markConnectedComponents: boolean;
 }
 
-export function run({path, depth, externalDependencies, externalDepth, outputTo, format, engine, filename}: Options) {
+export function run(options: Options) {
+  const {path, depth, externalDependencies, externalDepth, outputTo, format, engine, filename, markConnectedComponents} = options;
   // READ
   const data = JSON.parse(fs.readFileSync(filename, 'utf8'));
   // TRANSFORM
-  const dependencies = transform(data, {path, depth, externalDependencies, externalDepth});
+  const dependencies = transform(data, {path, depth, externalDependencies, externalDepth, markConnectedComponents});
   // WRITE
   const dotGraph = render(dependencies);
   if (format === 'dot') {

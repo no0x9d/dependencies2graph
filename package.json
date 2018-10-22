@@ -12,11 +12,13 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@dagrejs/graphlib": "^2.1.4",
     "lodash.groupby": "^4.6.0",
     "viz.js": "^2.0.0",
     "yargs": "^11.0.0"
   },
   "devDependencies": {
+    "@types/graphlib": "^2.1.4",
     "@types/lodash.groupby": "^4.6.4",
     "@types/node": "^10.1.2",
     "@types/yargs": "^12.0.1",

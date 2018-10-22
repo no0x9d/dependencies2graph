@@ -1,4 +1,5 @@
 import groupBy = require("lodash.groupby");
+import * as graphlib from '@dagrejs/graphlib';
 
 import {
   CruisedModules, Dependency,
@@ -29,10 +30,12 @@ interface Options {
   path: string,
   externalDependencies: boolean,
   externalDepth: number
+  markConnectedComponents: boolean;
 }
 
-export function transform(data: DependencyCruiserOutputFormatV3 | DependencyCruiserOutputFormatV4, options: Options): Module[] {
-  const {depth, path, externalDependencies, externalDepth} = options;
+export function transform(data: DependencyCruiserOutputFormatV3 | DependencyCruiserOutputFormatV4,
+  options: Options): Module[] {
+  const {depth, path, externalDependencies, externalDepth, markConnectedComponents} = options;
   const pathMatcher = new RegExp(path);
   const dependencyPredicate = externalDependencies ? () => true : (dep: Dependency) => pathMatcher.test(dep.resolved);
   let externalModules: Module[] = [];
@@ -78,14 +81,21 @@ export function transform(data: DependencyCruiserOutputFormatV3 | DependencyCrui
 
     const deps: Module[] = [];
     for (const [_source, module] of rootModulesMap) {
-      const groupedBySourceDependencies: { [key: string]: any[] } = groupBy(module.dependencies, (dep: ModuleDependency ) => dep.source);
+      const groupedBySourceDependencies: { [key: string]: any[] } = groupBy(module.dependencies,
+        (dep: ModuleDependency) => dep.source);
       module.dependencies = Object.values(groupedBySourceDependencies)
-        .map((depArray: ModuleDependency[]) => depArray.reduce((acc, curr) => Object.assign({}, acc, curr, preserveState(acc, curr)),
+        .map((depArray: ModuleDependency[]) => depArray.reduce(
+          (acc, curr) => Object.assign({}, acc, curr, preserveState(acc, curr)),
           {valid: true} as ModuleDependency));
       deps.push(module);
     }
     rootModules = deps;
   }
+
+  if (markConnectedComponents) {
+    findAndMarkConnectedComponents(rootModules);
+  }
+
   return rootModules;
 }
 
@@ -100,7 +110,7 @@ function groupBySource(map: Map<string, Module>, module: Module) {
   return map;
 }
 
-function shouldTruncate(module: {path: string[]}, depth: number): boolean {
+function shouldTruncate(module: { path: string[] }, depth: number): boolean {
   return module.path.length > depth;
 }
 
@@ -112,7 +122,7 @@ function preserveState(dep1: ModuleDependency, dep2: ModuleDependency):
   }
 }
 
-function truncatePath(module: {path: string[], external: boolean}, depth: number, externalDepth: number):
+function truncatePath(module: { path: string[], external: boolean }, depth: number, externalDepth: number):
   { source?: string, path?: string[], isModule?: boolean } {
   depth = module.external ? externalDepth : depth;
   if (shouldTruncate(module, depth)) {
@@ -124,5 +134,39 @@ function truncatePath(module: {path: string[], external: boolean}, depth: number
     }
   } else {
     return {};
+  }
+}
+
+function findAndMarkConnectedComponents(rootModules: Module[]) {
+  const graph = new graphlib.Graph({directed: true, multigraph: false});
+
+  // set nodes
+  rootModules.forEach(module => {
+    graph.setNode(module.source, module);
+  });
+
+  // set edges
+  rootModules.forEach(module => {
+    module.dependencies.forEach(dependency => {
+      graph.setEdge(module.source, dependency.source);
+    })
+  });
+
+  let connectedComponents = graphlib.alg.tarjan(graph)
+    .filter(component => component.length > 1);
+
+  // mark connected components
+  connectedComponents.forEach(component => {
+    component.forEach(node => {
+      const module: Module = graph.node(node);
+      module.dependencies
+        .filter(dep => component.indexOf(dep.source) > -1 && dep.source !== module.source)
+        .forEach(dep => dep.circular = true);
+    });
+  });
+
+  if (connectedComponents.length > 0) {
+    console.log('mark the following connected dependencies as circular:');
+    connectedComponents.forEach((component, index) => console.log(`${index + 1}: ${component.join(', ')}`))
   }
 }
