@@ -28,6 +28,7 @@ export interface ModuleDependency {
 interface Options {
   depth: number,
   path: string,
+  externalFilter?: string,
   externalDependencies: boolean,
   externalDependents: boolean,
   externalDepth: number
@@ -36,9 +37,11 @@ interface Options {
 
 export function transform(data: DependencyCruiserOutputFormatV3 | DependencyCruiserOutputFormatV4,
   options: Options): Module[] {
-  const {depth, path, externalDependencies, externalDependents, externalDepth, markConnectedComponents} = options;
+  const {depth, path, externalFilter, externalDependencies, externalDependents, externalDepth, markConnectedComponents} = options;
   const pathMatcher = new RegExp(path);
-  const dependencyPredicate = externalDependencies ? () => true : (dep: Dependency) => pathMatcher.test(dep.resolved);
+  const dependencyPredicate = externalDependencies ?
+    (dep: Dependency) => externalFilter ? dep.resolved.match(externalFilter) : true :
+    (dep: Dependency) => pathMatcher.test(dep.resolved);
   let externalModules: Module[] = [];
   let cruisedModules: CruisedModules[] = ((<DependencyCruiserOutputFormatV3>data).dependencies ||
     (<DependencyCruiserOutputFormatV4>data).modules);
@@ -74,6 +77,7 @@ export function transform(data: DependencyCruiserOutputFormatV3 | DependencyCrui
   if (externalDependents) {
     const dependantModules = cruisedModules
       .filter(cruisedModule => !pathMatcher.test(cruisedModule.source) &&
+        (!externalFilter || cruisedModule.source.match(externalFilter)) &&
         cruisedModule.dependencies.some(dep => pathMatcher.test(dep.resolved))
       )
       .map(cruisedModule => {

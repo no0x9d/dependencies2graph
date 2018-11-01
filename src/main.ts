@@ -9,6 +9,7 @@ import {write} from './write';
 export interface Options {
   depth: number;
   path: string;
+  externalFilter?: string
   externalDependencies: boolean;
   externalDependents: boolean;
   externalDepth: number;
@@ -20,11 +21,11 @@ export interface Options {
 }
 
 export function run(options: Options) {
-  const {path, depth, externalDependencies, externalDependents, externalDepth, outputTo, format, engine, filename, markConnectedComponents} = options;
+  const {path, depth, externalFilter, externalDependencies, externalDependents, externalDepth, outputTo, format, engine, filename, markConnectedComponents} = options;
   // READ
   const data = JSON.parse(fs.readFileSync(filename, 'utf8'));
   // TRANSFORM
-  const dependencies = transform(data, {path, depth, externalDependencies, externalDependents, externalDepth, markConnectedComponents});
+  const dependencies = transform(data, {path, depth, externalFilter, externalDependencies, externalDependents, externalDepth, markConnectedComponents});
   // WRITE
   const dotGraph = render(dependencies);
   if (format === 'dot') {

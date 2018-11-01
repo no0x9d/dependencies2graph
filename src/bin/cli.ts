@@ -37,6 +37,11 @@ const argv = yargs
     default: false,
     type: 'boolean',
   })
+  .option('F', {
+    alias: 'external-filter',
+    description: 'filter path for external dependencies and dependents',
+    type: 'string',
+  })
   .option('E', {
     alias: 'external-dependents',
     description: 'flag to show dependents which point inside of <filter>',
@@ -78,6 +83,7 @@ const pathSep = '/';
 const filename = argv.input;
 const path = argv.filter;
 const depth = argv.depth ? path.split(pathSep).length + argv.depth : 0;
+const externalFilter = argv.externalFilter;
 const externalDependencies = argv.externalDependencies;
 const externalDependents = argv.externalDependents;
 const externalDepth = argv.externalDepth;
@@ -91,7 +97,8 @@ run({
   path,
   depth,
   externalDependencies,
-  externalDependents: externalDependents,
+  externalFilter,
+  externalDependents,
   externalDepth,
   outputTo,
   engine,
