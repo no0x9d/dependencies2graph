@@ -37,6 +37,12 @@ const argv = yargs
     default: false,
     type: 'boolean',
   })
+  .option('E', {
+    alias: 'external-dependents',
+    description: 'flag to show dependents which point inside of <filter>',
+    default: false,
+    type: 'boolean',
+  })
   .option('C', {
     alias: 'connected-components',
     description: 'mark all connected components of the dependency tree as circular',
@@ -59,8 +65,7 @@ const argv = yargs
     type: 'string',
     requiresArg: true
   })
-  .option('E', {
-    alias: 'engine',
+  .option('engine', {
     description: 'Graphviz engine (responsible for graph layout)',
     choices: ['dot', 'circo', 'fdp', 'neato', 'osage', 'twopi'],
     default: 'dot',
@@ -74,10 +79,22 @@ const filename = argv.input;
 const path = argv.filter;
 const depth = argv.depth ? path.split(pathSep).length + argv.depth : 0;
 const externalDependencies = argv.externalDependencies;
+const externalDependents = argv.externalDependents;
 const externalDepth = argv.externalDepth;
 const outputTo = argv.out;
 const engine = argv.engine;
 const format = argv.target;
-const markConnectedComponents = argv.connectedComponents
+const markConnectedComponents = argv.connectedComponents;
 
-run({filename, path, depth, externalDependencies, externalDepth, outputTo, engine, format, markConnectedComponents});
+run({
+  filename,
+  path,
+  depth,
+  externalDependencies,
+  externalDependents: externalDependents,
+  externalDepth,
+  outputTo,
+  engine,
+  format,
+  markConnectedComponents
+});

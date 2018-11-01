@@ -29,13 +29,14 @@ interface Options {
   depth: number,
   path: string,
   externalDependencies: boolean,
+  externalDependents: boolean,
   externalDepth: number
   markConnectedComponents: boolean;
 }
 
 export function transform(data: DependencyCruiserOutputFormatV3 | DependencyCruiserOutputFormatV4,
   options: Options): Module[] {
-  const {depth, path, externalDependencies, externalDepth, markConnectedComponents} = options;
+  const {depth, path, externalDependencies, externalDependents, externalDepth, markConnectedComponents} = options;
   const pathMatcher = new RegExp(path);
   const dependencyPredicate = externalDependencies ? () => true : (dep: Dependency) => pathMatcher.test(dep.resolved);
   let externalModules: Module[] = [];
@@ -67,6 +68,37 @@ export function transform(data: DependencyCruiserOutputFormatV3 | DependencyCrui
     });
 
   rootModules.push(...externalModules);
+
+  // ==== add dependents ====
+
+  if (externalDependents) {
+    const dependantModules = cruisedModules
+      .filter(cruisedModule => !pathMatcher.test(cruisedModule.source) &&
+        cruisedModule.dependencies.some(dep => pathMatcher.test(dep.resolved))
+      )
+      .map(cruisedModule => {
+
+        const dependencies: ModuleDependency[] = cruisedModule.dependencies
+          .filter(dep => pathMatcher.test(dep.resolved))
+          .map((dep: Dependency) => ({
+            source: dep.resolved,
+            path: dep.resolved.split(pathSep),
+            external: false,
+            valid: dep.valid,
+            circular: dep.circular,
+          }));
+
+        return {
+          source: cruisedModule.source,
+          path: cruisedModule.source.split(pathSep),
+          external: true,
+          dependencies
+        }
+      });
+
+    rootModules.push(...dependantModules);
+  }
+  // ===============
 
   if (depth > 0) {
     const rootModulesMap: Map<string, Module> = rootModules

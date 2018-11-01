@@ -10,6 +10,7 @@ export interface Options {
   depth: number;
   path: string;
   externalDependencies: boolean;
+  externalDependents: boolean;
   externalDepth: number;
   outputTo: string;
   format: 'svg' | 'dot' | 'raw';
@@ -19,11 +20,11 @@ export interface Options {
 }
 
 export function run(options: Options) {
-  const {path, depth, externalDependencies, externalDepth, outputTo, format, engine, filename, markConnectedComponents} = options;
+  const {path, depth, externalDependencies, externalDependents, externalDepth, outputTo, format, engine, filename, markConnectedComponents} = options;
   // READ
   const data = JSON.parse(fs.readFileSync(filename, 'utf8'));
   // TRANSFORM
-  const dependencies = transform(data, {path, depth, externalDependencies, externalDepth, markConnectedComponents});
+  const dependencies = transform(data, {path, depth, externalDependencies, externalDependents, externalDepth, markConnectedComponents});
   // WRITE
   const dotGraph = render(dependencies);
   if (format === 'dot') {
