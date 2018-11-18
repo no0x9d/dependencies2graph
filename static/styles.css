@@ -1,0 +1,35 @@
+body {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+}
+
+aside.card {
+    margin-left: 8px;
+    padding: 8px;
+    width: 275px;
+    height: 97.5%;
+}
+
+aside h5 {
+    margin-top: 0;
+}
+
+aside label {
+    display: block;
+}
+
+aside button {
+    margin-top: 1.5rem;
+    float: right;
+}
+
+main {
+    flex-grow: 4;
+    height: 95vh;
+}
+
+main .svg-wrapper {
+    height: 100%;
+}

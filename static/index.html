@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="svg-pan-zoom.min.js"></script>
+    <link href="styles.css" rel="stylesheet">
+
+    <!-- Materialize CSS https://materializecss.com/ -->
+    <link rel="stylesheet" href="materialize.min.css">
+    <script src="materialize.min.js"></script>
+</head>
+<body onload="fetchSvg()">
+<script src="scripts.js"></script>
+<aside class="card">
+    <form onsubmit="return fetchSvg()">
+        <h5>Settings:</h5>
+        <div class="input-field">
+            <label for="path"> Scope:</label>
+            <input type="text" id="path" name="path">
+        </div>
+        <div class="input-field">
+            <input type="number" min="1" value="1" name="depth">
+            <label>Depth:</label>
+        </div>
+        <label>
+            <input type="checkbox" name="externalDependencies">
+            <span>show dependencies:</span>
+        </label>
+        <label>
+            <input type="checkbox" name="externalDependents">
+            <span>show dependets</span>
+        </label>
+        <div class="input-field">
+            <input type="text" name="externalFilter">
+            <label> outer Scope:</label>
+        </div>
+        <div class="input-field">
+            <input type="number" name="externalDepth" min="1" value="1">
+            <label> outer Depth:</label>
+        </div>
+        <label>
+            <input type="checkbox" name="markConnectedComponents">
+            <span>highlight connect components</span>
+        </label>
+        <button class="btn waves-effect waves-light" type="submit">Update</button>
+    </form>
+</aside>
+<main>
+    <div class="svg-wrapper" id="svg"></div>
+</main>
+</body>
+</html>
