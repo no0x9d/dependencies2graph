@@ -7,7 +7,7 @@ import {readData} from './util';
 
 const argv = yargs
   .help()
-  .command('viewer [deps]', 'starts a web-server with an interactive graph viewer',
+  .command(['$0', 'viewer [deps]'], 'starts a web-server with an interactive graph viewer',
     (yargs: Argv) => {
       return yargs.positional('deps', {
         description: 'path to dependency json file, if omitted read from stdin',
@@ -20,7 +20,7 @@ const argv = yargs
         })
     )
   )
-  .command(['$0', 'generate'], 'generates a dependency graph',
+  .command('generate', 'generates a dependency graph',
     (yargs: Argv) =>
       yargs
         .option('i', {
