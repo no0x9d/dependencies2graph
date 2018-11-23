@@ -10,7 +10,7 @@ function fetchSvg() {
   for (var [key, value] of formData) {
     body[key] = value;
   }
-  window.fetch('//localhost:3000/svg', {
+  window.fetch('/svg', {
     method: 'POST',
     body: JSON.stringify(body),
     headers: {
