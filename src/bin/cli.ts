@@ -1,29 +1,34 @@
 #!/usr/bin/env node
 import * as yargs from 'yargs';
+import {Arguments, Argv} from 'yargs';
 import {run} from '../main';
 import {runServer} from './server';
-import {Arguments, Argv} from 'yargs';
+import {readData} from './util';
 
 const argv = yargs
   .help()
-  .command('viewer <deps>', 'starts a web-server with an interactive graph viewer',
+  .command('viewer [deps]', 'starts a web-server with an interactive graph viewer',
     (yargs: Argv) => {
       return yargs.positional('deps', {
-        description: 'path to dependency json file',
+        description: 'path to dependency json file, if omitted read from stdin',
         type: 'string'
       })
     },
-    ((args: Arguments) => runServer(args.deps))
+    ((args: Arguments) => readData(args.deps)
+        .then(data => {
+          runServer(data)
+        })
+    )
   )
   .command(['$0', 'generate'], 'generates a dependency graph',
     (yargs: Argv) =>
       yargs
         .option('i', {
           alias: 'input',
-          description: 'dependency-cruiser JSON file',
+          description: 'dependency-cruiser JSON file, if omitted read from stdin',
           demandOption: true,
           type: 'string',
-          requiresArg: true
+          requiresArg: false
         })
         .option('f', {
           alias: 'filter',
@@ -105,19 +110,22 @@ const argv = yargs
       const format = argv.target;
       const markConnectedComponents = argv.connectedComponents;
 
-      run({
-        filename,
-        path,
-        depth,
-        externalDependencies,
-        externalFilter,
-        externalDependents,
-        externalDepth,
-        outputTo,
-        engine,
-        format,
-        markConnectedComponents
-      });
+      readData(filename)
+        .then(data => {
+          run({
+            data,
+            path,
+            depth,
+            externalDependencies,
+            externalFilter,
+            externalDependents,
+            externalDepth,
+            outputTo,
+            engine,
+            format,
+            markConnectedComponents
+          });
+        })
     }
   )
   .argv;

@@ -1,18 +1,18 @@
-import * as fs from 'fs';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import {transform} from '../transform';
 import {render} from '../render';
 import {Module, render as VizRender} from 'viz.js/full.render'
+import {DependencyCruiserOutputFormatV3, DependencyCruiserOutputFormatV4} from '../typings/dependency-cruiser';
+import {readData} from './util';
 import Viz = require('viz.js');
 
 const PORT = 3000;
 const engine = 'dot';
 const format = 'svg';
 
-export function runServer(filename: string) {
+export function runServer(data: DependencyCruiserOutputFormatV3 | DependencyCruiserOutputFormatV4) {
   // READ
-  const data = JSON.parse(fs.readFileSync(filename, 'utf8'));
   const app = express();
   app.use(express.static(__dirname + '/../../static'));
   app.use(bodyParser.json());
@@ -50,9 +50,6 @@ export function runServer(filename: string) {
 // run server if file is directly executed via `node server`
 if (module && !module.parent) {
   const filename = process.argv[2];
-  if (filename) {
-    runServer(filename);
-  } else {
-    console.log('filename to dependency json file needed');
-  }
+  readData(filename)
+    .then(runServer)
 }
