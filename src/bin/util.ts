@@ -16,6 +16,7 @@ function parseJson(inputJson: string): any {
 }
 
 function readFromStdin(): Promise<string> {
+  console.log("Read input from stdin. If this is not what you wanted try 'dependencies2graph --help'");
   return new Promise<string>((resolve) => {
     const stdin = process.stdin;
     const inputChunks: string[] = [];
