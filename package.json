@@ -13,7 +13,6 @@
   "license": "MIT",
   "dependencies": {
     "@dagrejs/graphlib": "^2.1.4",
-    "@types/express": "^4.0.39",
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
     "lodash.groupby": "^4.6.0",
@@ -21,6 +20,7 @@
     "yargs": "^11.0.0"
   },
   "devDependencies": {
+    "@types/express": "^4.0.39",
     "@types/graphlib": "^2.1.4",
     "@types/lodash.groupby": "^4.6.4",
     "@types/node": "^10.1.2",
