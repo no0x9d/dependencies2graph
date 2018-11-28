@@ -7,6 +7,7 @@ import {readData} from './util';
 
 const argv = yargs
   .help()
+  .scriptName('')
   .command(['viewer [deps]', '$0'], 'starts a web-server with an interactive graph viewer',
     (yargs: Argv) => {
       return yargs.positional('deps', {
