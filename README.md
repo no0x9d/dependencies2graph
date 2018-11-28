@@ -7,16 +7,27 @@ all developers building a cleaner application, because of a better understanding
 
 ## Getting started
 
-Create a JSON file with your frontend dependencies with dependency-cruiser
-
+Install dependencies2graph (prefe global)j This project uses the output from another tool called dependency-cruiser. You need it as well, so install them together
 ```sh
-dependency-cruiser -T json --exclude "^node_modules" --ts-pre-compilation-deps -f deps.json
+npm install --global dependencies2graph dependency-cruiser
 ```
 
-Than create your graphs via dependency-graph cli. To get a svg with an overview of a typical Angular application you can call
+Create a JSON file with your frontend dependencies with dependency-cruiser and than start the interactive viewer or create your graphs via dependencies2graph cli.
+
 
 ```sh
-dependencies2graph --input deps.json --out overview.svg --filter src/app
+dependency-cruiser -T json --exclude "^node_modules" -f deps.json <path-to-source>
+dependencies2graph deps.json
+```
+For a one off views you can simply pipe the output from depenedency-cruiser direct to dependencies2graph
+```
+dependency-cruiser -T json --exclude "^node_modules" <path-to-source> | dependencies2graph
+```
+
+To get a svg with an overview of a typical Angular application you can call
+
+```sh
+dependencies2graph generate --input deps.json --out overview.svg --filter src/app
 ```
 
 ## CLI

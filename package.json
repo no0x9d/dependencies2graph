@@ -1,15 +1,19 @@
 {
   "name": "dependencies2graph",
   "version": "1.0.0",
-  "description": "",
+  "description": "interactively search and check your application internal dependencies or generate static images for documentations",
   "main": "dist/main.js",
   "bin": "dist/bin/cli.js",
+  "preferGlobal": true,
   "scripts": {
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["dependencies", "visualisation", "static analysis", "architecture", "dependency graph"],
+  "author": {
+    "name": "Christoph Hoffmann",
+    "email": "me@nestedloop.de"
+  },
   "license": "MIT",
   "dependencies": {
     "@dagrejs/graphlib": "^2.1.4",
@@ -29,5 +33,13 @@
   },
   "engines": {
     "node": ">7.5"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/no0x9d/dependencies2graph.git"
+  },
+  "bugs": {
+    "url": "https://github.com/no0x9d/dependencies2graph/issues"
+  },
+  "homepage": "https://github.com/no0x9d/dependencies2graph"
 }
