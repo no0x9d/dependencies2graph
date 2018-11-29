@@ -6,10 +6,18 @@
   "bin": "dist/bin/cli.js",
   "preferGlobal": true,
   "scripts": {
+    "prebuild": "rimraf dist",
     "build": "tsc",
+    "prepublish": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["dependencies", "visualisation", "static analysis", "architecture", "dependency graph"],
+  "keywords": [
+    "dependencies",
+    "visualisation",
+    "static analysis",
+    "architecture",
+    "dependency graph"
+  ],
   "author": {
     "name": "Christoph Hoffmann",
     "email": "me@nestedloop.de"
@@ -20,6 +28,7 @@
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
     "lodash.groupby": "^4.6.0",
+    "rimraf": "^2.6.2",
     "viz.js": "^2.0.0",
     "yargs": "^12.0.5"
   },
