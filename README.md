@@ -19,7 +19,7 @@ Create a JSON file with your frontend dependencies with dependency-cruiser and t
 dependency-cruiser -T json --exclude "^node_modules" -f deps.json <path-to-source>
 dependencies2graph deps.json
 ```
-For a one off views you can simply pipe the output from depenedency-cruiser direct to dependencies2graph
+For a one off views you can simply pipe the output from dependency-cruiser direct to dependencies2graph
 ```
 dependency-cruiser -T json --exclude "^node_modules" <path-to-source> | dependencies2graph
 ```
@@ -31,20 +31,43 @@ dependencies2graph generate --input deps.json --out overview.svg --filter src/ap
 ```
 
 ## CLI
+### start interactive graph viewer
 
 ```sh
-Options:
-  --help                       Show help                               [boolean]
-  --version                    Show version number                     [boolean]
-  -i, --input                  dependency-cruiser JSON file  [string] [required]
-  -f, --filter                 path for the dependency subgraph [string] [default: ""]
-  -d, --depth                  number of child folders to show(0 for infinite) [number] [default: 1]
-  -D, --external-depth         number of child folders for external dependencies [number] [default: 1]
-  -e, --external-dependencies  flag to show dependencies which point outside of <filter> [default: false]
-  -o, --out                    output file            [string] [default: stdout]
-  -t, --target                 output format [string] [choices: "svg", "dot", "raw"] [default: "svg"]
-  -E, --engine                 Graphviz engine (responsible for graph layout) [string]
-                                 [choices: "dot", "circo", "fdp", "neato", "osage", "twopi"] [default: "dot"]
+$ dependencies2graph viewer [dependency-file]
+# or read from stdin
+$ cat dependency.json | dependencies2graph viewer
+```
+
+### generate images
+```sh
+$ dependencies2graph generate
+
+Optionen:
+  --version                    Version anzeigen                        [boolean]
+  --help                       Hilfe anzeigen                          [boolean]
+  -i, --input                  dependency-cruiser JSON file, if omitted read
+                               from stdin                               [string]
+  -f, --filter                 path for the dependency subgraph
+                                                          [string] [default: ""]
+  -d, --depth                  number of child folders to show(0 for infinite)
+                                                           [number] [default: 1]
+  -D, --external-depth         number of child folders for external dependencies
+                                                           [number] [default: 1]
+  -e, --external-dependencies  flag to show dependencies which point outside of
+                               <filter>              [boolean] [default: false]
+  -F, --external-filter        filter path for external dependencies and
+                               dependents                               [string]
+  -E, --external-dependents    flag to show dependents which point inside of
+                               <filter>              [boolean] [default: false]
+  -C, --connected-components   mark all connected components of the dependency
+                               tree as circular      [boolean] [default: false]
+  -o, --out                    output file           [string] [default: stdout]
+  -t, --target                 output format
+                 [string] [choices: "svg", "dot", "raw"] [default: "svg"]
+  --engine                     Graphviz engine (responsible for graph layout)
+      [string] [choices: "dot", "circo", "fdp", "neato", "osage", "twopi"]
+                                                               [default: "dot"]
 ```
 
 ##### -i, --input (required):
