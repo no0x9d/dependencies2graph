@@ -27,9 +27,8 @@ const argv = yargs
         .option('i', {
           alias: 'input',
           description: 'dependency-cruiser JSON file, if omitted read from stdin',
-          demandOption: true,
           type: 'string',
-          requiresArg: false
+          requiresArg: true
         })
         .option('f', {
           alias: 'filter',
