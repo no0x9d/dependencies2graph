@@ -33,3 +33,24 @@ main {
 main .svg-wrapper {
     height: 100%;
 }
+
+g.node:hover * {
+    stroke: blue;
+}
+
+g.node:hover text {
+    stroke: none;
+    fill: blue;
+}
+
+g.edge:hover * {
+    stroke: blue;
+}
+g.edge:hover polygon {
+    fill: blue;
+}
+
+g.edge:hover text {
+    stroke: none;
+    fill: blue;
+}
