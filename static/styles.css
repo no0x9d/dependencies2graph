@@ -35,22 +35,43 @@ main .svg-wrapper {
 }
 
 g.node.hovered * {
-    stroke: blue;
+    stroke: #0d47a1;
 }
 
 g.node.hovered text {
     stroke: none;
-    fill: blue;
+    fill: #0d47a1;
 }
 
 g.edge.hovered * {
-    stroke: blue;
+    stroke: #0d47a1;
 }
 g.edge.hovered polygon {
-    fill: blue;
+    fill: #0d47a1;
 }
 
 g.edge.hovered text {
     stroke: none;
-    fill: blue;
+    fill: #0d47a1;
+}
+
+g.node.hovered.direct * {
+    stroke: #2196f3;
+}
+
+g.node.hovered.direct text {
+    stroke: none;
+    fill: #2196f3;
+}
+
+g.edge.hovered.direct * {
+    stroke: #2196f3;
+}
+g.edge.hovered.direct polygon {
+    fill: #2196f3;
+}
+
+g.edge.hovered.direct text {
+    stroke: none;
+    fill: #2196f3;
 }

@@ -56,43 +56,55 @@
 
     let svgWrapper = document.getElementById('svg');
 
+    function setHoveredClasses(elem, level) {
+      if (level <= 1) {
+        elem.classList.add('direct')
+      }
+      elem.classList.add('hovered');
+    }
+
     function clearSelection() {
       if ($prevHovered) {
         removeClass(svgWrapper, '.hovered', 'hovered');
+        removeClass(svgWrapper, '.hovered-dependency', 'hovered-dependency');
+        removeClass(svgWrapper, '.hovered-dependent', 'hovered-dependent');
+        removeClass(svgWrapper, '.direct', 'direct');
         $prevHovered = null;
       }
     }
 
-    function markNodeDependents($node) {
-      if ($node.classList.contains('hovered')) {
+    function markNodeDependents($node, level) {
+      setHoveredClasses($node, level);
+      if ($node.classList.contains('hovered-dependent')) {
         return;
       }
-      $node.classList.add('hovered');
+      $node.classList.add('hovered-dependent');
       edgesToNode($node.id).forEach(edge => {
-        markEdgeDependent(edge)
+        markEdgeDependent(edge, level + 1)
       });
     }
 
-    function markEdgeDependent($edge) {
-      $edge.classList.add('hovered');
+    function markEdgeDependent($edge, level) {
+      setHoveredClasses($edge, level);
       const edgeSourceNode = edgeSource($edge);
-      markNodeDependents(edgeSourceNode);
+      markNodeDependents(edgeSourceNode, level);
     }
 
-    function markNodeDependencies($node, force) {
-      if ($node.classList.contains('hovered') && !force) {
+    function markNodeDependencies($node, level) {
+      setHoveredClasses($node, level);
+      if ($node.classList.contains('hovered-dependency')) {
         return;
       }
-      $node.classList.add('hovered');
+      $node.classList.add('hovered-dependency');
       edgesFromNode($node.id).forEach(edge => {
-        markEdgeDependencies(edge)
+        markEdgeDependencies(edge, level + 1)
       });
     }
 
-    function markEdgeDependencies($edge) {
-      $edge.classList.add('hovered');
+    function markEdgeDependencies($edge, level) {
+      setHoveredClasses($edge, level);
       const edgeTargetNode = edgeTarget($edge);
-      markNodeDependencies(edgeTargetNode);
+      markNodeDependencies(edgeTargetNode, level);
     }
 
     svgWrapper.addEventListener('mousemove', event => {
@@ -108,8 +120,8 @@
         }
         clearSelection();
         $prevHovered = $node;
-        markNodeDependents($node);
-        markNodeDependencies($node, true);
+        markNodeDependents($node, 0);
+        markNodeDependencies($node, 0);
       } else if (isEdge(target)) {
         const $edge = getEdge(target);
         if ($edge.classList.contains('hovered')) {
@@ -117,8 +129,8 @@
         }
         clearSelection();
         $prevHovered = $edge;
-        markEdgeDependent($edge);
-        markEdgeDependencies($edge)
+        markEdgeDependent($edge, 1);
+        markEdgeDependencies($edge, 1)
       } else {
         clearSelection();
       }
