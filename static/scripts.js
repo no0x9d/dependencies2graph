@@ -155,7 +155,7 @@
 
   function getParent(elem, className) {
     while (elem && elem.tagName !== 'svg') {
-      if (elem.classList.contains(className)) {
+      if (elem.classList && elem.classList.contains(className)) {
         return elem;
       }
       elem = elem.parentNode;
@@ -195,6 +195,13 @@
     return document.querySelectorAll(".edge[data-to='" + id + "']");
   }
 
+  function resizeHandler() {
+    if (panZoomInstance) {
+      panZoomInstance.resize();
+    }
+  }
+
+  window.addEventListener('resize', resizeHandler);
   highlightHover();
   window.fetchSvg = fetchSvg;
 })(window);
