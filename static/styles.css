@@ -34,23 +34,23 @@ main .svg-wrapper {
     height: 100%;
 }
 
-g.node:hover * {
+g.node.hovered * {
     stroke: blue;
 }
 
-g.node:hover text {
+g.node.hovered text {
     stroke: none;
     fill: blue;
 }
 
-g.edge:hover * {
+g.edge.hovered * {
     stroke: blue;
 }
-g.edge:hover polygon {
+g.edge.hovered polygon {
     fill: blue;
 }
 
-g.edge:hover text {
+g.edge.hovered text {
     stroke: none;
     fill: blue;
 }

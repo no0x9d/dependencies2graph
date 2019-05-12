@@ -42,12 +42,12 @@ function determineEdgeColor(dependency: ModuleDependency) {
   return 'black';
 }
 
-function renderSubgraph(id: string, content:string, attributes: Attributes) {
+function renderSubgraph(id: string, content: string, attributes: Attributes) {
   return `subgraph "cluster_${id}" { ${renderAttributes(attributes)} ${content} }`
 }
 
 function renderNode(id: string, attributes: Attributes) {
-  return `"${id}" [${renderAttributes(attributes)}]`
+  return `"${id}" [${renderAttributes({...attributes, id: `"${id}"`})}]`
 }
 
 function renderAttributes(attributes: Attributes): string {
@@ -65,7 +65,7 @@ function renderAttribute(key: string, value: string): string {
 }
 
 function renderEdge(from: string, to: string, attributes: Attributes): string {
-  return `  "${from}" -> "${to}" [${renderAttributes(attributes)}]`;
+  return `  "${from}" -> "${to}" [${renderAttributes({...attributes, id: `"${from} -> ${to}"`})}]`;
 }
 
 function nodeStyles(module: Module): Attributes {
