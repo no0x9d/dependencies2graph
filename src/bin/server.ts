@@ -38,6 +38,10 @@ export function runServer(data: DependencyCruiserOutputFormatV3 | DependencyCrui
       .then((outputSvg: string) => {
         res.type('text/svg+xml');
         res.send(outputSvg);
+      })
+      .catch(error => {
+        console.log(error);
+        res.status(500).end();
       });
 
   });
