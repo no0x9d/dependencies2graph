@@ -85,7 +85,7 @@ function nodeStyles(module: Module): Attributes {
 }
 
 function renderGraph(graph: string) {
-  return `digraph G {
+  return `digraph dependencies {
     rankdir=TB
     splines=true
     overlap=false
