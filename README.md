@@ -7,19 +7,26 @@ all developers building a cleaner application, because of a better understanding
 
 ## Getting started
 
-Install dependencies2graph (prefe global)j This project uses the output from another tool called dependency-cruiser. You need it as well, so install them together
+Install dependencies2graph (prefer global). This project uses the output from another tool called [dependency-cruiser](https://github.com/sverweij/dependency-cruiser). You need it as well, so install them together
 ```sh
 npm install --global dependencies2graph dependency-cruiser
 ```
 
-Create a JSON file with your frontend dependencies with dependency-cruiser and than start the interactive viewer or create your graphs via dependencies2graph cli.
-
-
+If you're using TypeScript make sure that you have the TypeScript compiler installed as well
 ```sh
-dependency-cruiser -T json --exclude "^node_modules" -f deps.json <path-to-source>
+npm install -g typescript
+```
+
+Create a JSON file of your dependencies with dependency-cruiser and than start the interactive viewer or create your graphs via dependencies2graph cli.
+When using TypeScript dependency-cruiser by default ignores compile time dependencies like interfaces and types. 
+To include these compile time dependencies add the `--ts-pre-compilation-deps` command line flag to call of dependency-cruiser.
+
+A typical usage for TypeScript and ignoring everything in your node_modules folder is the following:
+```sh
+dependency-cruiser -T json --exclude "^node_modules" -f deps.json <path-to-source> --ts-pre-compilation-deps
 dependencies2graph deps.json
 ```
-For a one off views you can simply pipe the output from dependency-cruiser direct to dependencies2graph
+For a one-off views you can simply pipe the output from dependency-cruiser direct to dependencies2graph
 ```
 dependency-cruiser -T json --exclude "^node_modules" <path-to-source> | dependencies2graph
 ```
@@ -38,6 +45,9 @@ $ dependencies2graph viewer [dependency-file]
 # or read from stdin
 $ cat dependency.json | dependencies2graph viewer
 ```
+
+When you hover a node or edge on the interactive graph all connected dependencies and dependants are highlighted.
+The light blue dependencies and dependants are direct dependencies and the darker blue are transient one.
 
 ### generate images
 ```sh
