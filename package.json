@@ -1,6 +1,6 @@
 {
   "name": "dependencies2graph",
-  "version": "0.10.1",
+  "version": "0.11.0",
   "description": "interactively search and check your application internal dependencies or generate static images for documentations",
   "main": "dist/main.js",
   "bin": "dist/bin/cli.js",
