@@ -1,5 +1,6 @@
 (function (window) {
   let panZoomInstance;
+  const svgNS = "http://www.w3.org/2000/svg";
 
   function fetchSvg() {
     if (panZoomInstance) {
@@ -33,6 +34,27 @@
           // center: true,
           viewportSelector: '.svg-wrapper',
           maxZoom: 50
+        });
+      })
+      .then(() => {
+        forEachNode(svg, '.descendants', collapsed => {
+          collapsed.classList.forEach(clazz => {
+            const match = clazz.match(/descendant-count-(.*)/);
+            if (match) {
+              const folderSymbol = collapsed.querySelector('polyline');
+              const bBox = folderSymbol.getBBox();
+              const newText = document.createElementNS(svgNS, "text");
+              newText.setAttributeNS(null, "x", bBox.x + 1);
+              newText.setAttributeNS(null, "y", bBox.y + 6);
+              newText.setAttributeNS(null, "font-size", "7px");
+              newText.setAttributeNS(null, "text-anchor", "left");
+              newText.setAttributeNS(null, "fill", "rgb(97,128,124)");
+              const textNode = document.createTextNode(match[1]);
+              newText.appendChild(textNode);
+              collapsed.appendChild(newText);
+              collapsed.setAttribute('data-count', match[1])
+            }
+          })
         });
       });
     return false;

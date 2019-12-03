@@ -75,6 +75,9 @@ function nodeStyles(module: Module): Attributes {
     attributes.fillcolor = '"#ffffff"';
     attributes.height = "0.4";
     attributes.shape = 'tab';
+    if (module.children) {
+      attributes.class = `"descendants descendant-count-${module.children}"`
+    }
   }
 
   if (module.external) {

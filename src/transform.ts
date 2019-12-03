@@ -15,6 +15,7 @@ export interface Module {
   external: boolean;
   dependencies: ModuleDependency[];
   isModule?: boolean;
+  children?: number
 }
 
 export interface ModuleDependency {
@@ -137,7 +138,9 @@ export function transform(data: DependencyCruiserOutputFormatV3 | DependencyCrui
 
 function groupBySource(map: Map<string, Module>, module: Module) {
   if (map.has(module.source)) {
-    map.get(module.source)!
+    const existingModule = map.get(module.source)!;
+    existingModule.children = (existingModule.children || 1) + 1;
+    existingModule
       .dependencies
       .push(...module.dependencies);
   } else {
